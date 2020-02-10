@@ -1,28 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:kick_app/new_game/team.dart';
+import 'package:kick_app/new_game/player.dart';
 import 'package:kick_app/new_game/role.dart';
+import 'package:kick_app/new_game/team.dart';
+import 'package:kick_app/new_game/goal.dart';
 
 class PlayerPanel extends StatefulWidget {
-  final Team team;
-  final Role role;
-  final VoidCallback onGoal;
-  final VoidCallback onOwnGoal;
 
-  PlayerPanel({Key key, @required this.team, @required this.role, this.onGoal, this.onOwnGoal}): super(key:key);
+  final Player player;
+  final ValueChanged<Goal> onGoal;
+
+  PlayerPanel({Key key,@required this.player, this.onGoal}): super(key:key);
   @override
-  _PlayerPlaneState createState() => _PlayerPlaneState( team: this.team,  role: this.role);
+  _PlayerPlaneState createState() => _PlayerPlaneState( player:this.player);
 }
 
 class _PlayerPlaneState extends State<PlayerPanel> {
-  String playerName;
-  final Team team;
-  final Role role;
+  final Player player;
 
   static const _kFontFam = 'KickApp';
   static const IconData soccer_ball =
   const IconData(0xf1e3, fontFamily: _kFontFam);
 
-  _PlayerPlaneState({key, @required this.team, @required this.role});
+  _PlayerPlaneState({key, @required this.player});
 
   @override
   Widget build(BuildContext context) {
@@ -35,8 +34,8 @@ class _PlayerPlaneState extends State<PlayerPanel> {
               child: TextField(
                 textAlign: TextAlign.center,
                 decoration: InputDecoration(
-                    hintText: role.name,
-                    fillColor: team.color,
+                    hintText:player.role.name,
+                    fillColor:  player.team.color,
                     filled: true),
               ),
             ),
@@ -51,7 +50,7 @@ class _PlayerPlaneState extends State<PlayerPanel> {
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: GestureDetector(
-                          onTap: () => {widget.onOwnGoal()},
+                          onTap: () => {widget.onGoal(Goal(true, player, DateTime.now()))},
                           child: Container(
                               decoration: BoxDecoration(
                                 color: Colors.white,
@@ -59,7 +58,7 @@ class _PlayerPlaneState extends State<PlayerPanel> {
                               ),
                               child: Icon(
                                 soccer_ball,
-                                color: team.othersColor,
+                                color: player.team.othersColor,
                               )),
                         ),
                       ),
@@ -71,7 +70,7 @@ class _PlayerPlaneState extends State<PlayerPanel> {
                       Padding(
                         padding: const EdgeInsets.only(top: 80.0),
                         child: GestureDetector(
-                          onTap: () => {widget.onGoal()},
+                          onTap: () => {widget.onGoal(Goal(false, player, DateTime.now()))},
                           child: Container(
                               decoration: BoxDecoration(
                                 color: Colors.white,
@@ -79,7 +78,7 @@ class _PlayerPlaneState extends State<PlayerPanel> {
                               ),
                               child: Icon(
                                 soccer_ball,
-                                color: team.color,
+                                color: player.team.color,
                                 size: 60,
                               )),
                         ),

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:kick_app/new_game/goal.dart';
+import 'package:kick_app/new_game/player.dart';
 import 'package:kick_app/new_game/player_panel.dart';
 import 'package:kick_app/new_game/role.dart';
 import 'package:kick_app/new_game/team.dart';
@@ -9,8 +11,13 @@ class NewGamePage extends StatefulWidget {
 }
 
 class _NewGamePageState extends State<NewGamePage> {
-  var _blue_score = 0;
-  var _red_score = 0;
+  var _bluScore = 0;
+  var _redScore = 0;
+  Player blueDef = Player(Team.BLU, Role.DEFENCE);
+  Player blueOf = Player(Team.BLU, Role.OFFENCE);
+  Player redDef = Player(Team.RED, Role.DEFENCE);
+  Player redOf = Player(Team.RED, Role.OFFENCE);
+  var events = new List();
 
   @override
   Widget build(BuildContext context) {
@@ -28,13 +35,17 @@ class _NewGamePageState extends State<NewGamePage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: <Widget>[
-                      PlayerPanel(team: Team.BLU, role: Role.DEFENCE, onGoal: () => setState(() => _blue_score++), onOwnGoal: () => setState(() => _red_score++)),
+                      PlayerPanel(
+                          player: blueDef,
+                          onGoal: (goal) => _handleGoal(goal)),
                       VerticalDivider(
                         color: Colors.white,
                         width: 5,
                         thickness: 5,
                       ),
-                      PlayerPanel(team: Team.BLU, role: Role.OFFENCE, onGoal: () => setState(() => _blue_score++), onOwnGoal: () => setState(() => _red_score++)),
+                      PlayerPanel(
+                          player: blueOf,
+                          onGoal: (goal) => _handleGoal(goal)),
                     ],
                   ),
                 )),
@@ -53,7 +64,7 @@ class _NewGamePageState extends State<NewGamePage> {
                         Padding(
                           padding: const EdgeInsets.only(left: 130, right: 130),
                           child: Row(children: <Widget>[
-                            Text('$_blue_score',
+                            Text('$_bluScore',
                                 style: TextStyle(
                                     color: Colors.blueAccent,
                                     fontWeight: FontWeight.bold,
@@ -65,7 +76,7 @@ class _NewGamePageState extends State<NewGamePage> {
                                     fontWeight: FontWeight.bold,
                                     fontSize: 50),
                                 textAlign: TextAlign.center),
-                            Text('$_red_score',
+                            Text('$_redScore',
                                 style: TextStyle(
                                     color: Colors.redAccent,
                                     fontWeight: FontWeight.bold,
@@ -88,17 +99,38 @@ class _NewGamePageState extends State<NewGamePage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: <Widget>[
-                      PlayerPanel(team: Team.RED, role: Role.DEFENCE, onGoal: () => setState(() => _red_score++), onOwnGoal: () => setState(() => _blue_score++)),
+                      PlayerPanel(
+                          player: redDef, onGoal: (goal) => _handleGoal(goal)),
                       VerticalDivider(
                         color: Colors.white,
                         width: 5,
                         thickness: 5,
                       ),
-                      PlayerPanel(team: Team.RED, role: Role.DEFENCE, onGoal: () => setState(() => _red_score++), onOwnGoal: () => setState(() => _blue_score++)),
+                      PlayerPanel(
+                          player: redOf,
+                          onGoal: (goal) => _handleGoal(goal)),
                     ],
                   ),
                 ))
           ],
         ));
+  }
+
+  void _handleGoal(Goal goal) {
+    events.add(goal);
+    print(events);
+    if (goal.player.team == Team.RED) {
+      if (goal.isOwnGoal) {
+        setState(() => (_bluScore++));
+      } else {
+        setState(() => (_redScore++));
+      }
+    } else {
+      if (goal.isOwnGoal) {
+        setState(() => (_redScore++));
+      } else {
+        setState(() => (_bluScore++));
+      }
+    }
   }
 }
