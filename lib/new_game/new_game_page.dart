@@ -59,7 +59,10 @@ class _NewGamePageState extends State<NewGamePage> {
                         IconButton(
                           icon: Icon(Icons.undo),
                           color: Colors.white,
-                          onPressed: () => {},
+                          onPressed: () {
+                            events.removeLast();
+                            _updateScore();
+                          },
                         ),
                         Padding(
                           padding: const EdgeInsets.only(left: 130, right: 130),
@@ -118,18 +121,25 @@ class _NewGamePageState extends State<NewGamePage> {
 
   void _handleGoal(Goal goal) {
     events.add(goal);
-    print(events);
-    if (goal.player.team == Team.RED) {
-      if (goal.isOwnGoal) {
-        setState(() => (_bluScore++));
+    _updateScore();
+  }
+
+  void _updateScore () {
+    _bluScore = 0;
+    _redScore = 0;
+    for(final event in events){
+      if (event.player.team == Team.RED) {
+        if (event.isOwnGoal) {
+          setState(() => (_bluScore++));
+        } else {
+          setState(() => (_redScore++));
+        }
       } else {
-        setState(() => (_redScore++));
-      }
-    } else {
-      if (goal.isOwnGoal) {
-        setState(() => (_redScore++));
-      } else {
-        setState(() => (_bluScore++));
+        if (event.isOwnGoal) {
+          setState(() => (_redScore++));
+        } else {
+          setState(() => (_bluScore++));
+        }
       }
     }
   }
